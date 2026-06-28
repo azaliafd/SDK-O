@@ -383,6 +383,7 @@ def render_result(df_data, probs, conf, label, encoder):
 
     else:
         # Terdeteksi Rudal — lanjut ke Tahap 2
+        st.caption(f"DEBUG: label='{label}' | type={type(label)} | classes={encoder.classes_}")
         st.error(
             f"**⚠️ TERDETEKSI: OBJEK ANCAMAN (RUDAL)**\n\n"
             f"Probabilitas ancaman: **{prob_rudal*100:.2f}%** — "
