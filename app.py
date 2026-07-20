@@ -522,62 +522,63 @@ with st.sidebar:
     if DEV_MODE:
         st.divider()
         st.caption("⚙️ Developer Mode")
-        
+
         use_comparison = st.toggle(
             "Bandingkan S1 / S2 / S3",
-        value=_cfg.get("use_comparison", False),
-    )
+            value=_cfg.get("use_comparison", False),
+            )
+        
+        if not use_comparison:
+            split_options = list(SPLIT_LABELS.keys())
+            saved_index = (
+                split_options.index(_cfg.get("selected_split", "S1 (70:15:15)"))
+                if _cfg.get("selected_split") in split_options
+                else 0
+                )
+            
+            selected_split = st.selectbox(
+                "Model Split Aktif",
+                options=split_options,
+                index=saved_index,
+                )
+            
+        else:
+            selected_split = _cfg.get("selected_split", "S1 (70:15:15)")
+            st.caption("Ketiga model dijalankan bersamaan.")
 
-    if not use_comparison:
-        split_options = list(SPLIT_LABELS.keys())
-        saved_index = (
-            split_options.index(_cfg.get("selected_split", "S1 (70:15:15)"))
-            if _cfg.get("selected_split") in split_options
-            else 0
-        )
+        new_cfg = {
+            "selected_split": selected_split,
+            "use_comparison": use_comparison,
+        }
 
-        selected_split = st.selectbox(
-            "Model Split Aktif",
-            options=split_options,
-            index=saved_index,
-        )
+        if new_cfg != _cfg:
+            _save_config(new_cfg)
+            _cfg = new_cfg
 
     else:
-        selected_split = _cfg.get("selected_split", "S1 (70:15:15)")
-        st.caption("Ketiga model dijalankan bersamaan.")
+        selected_split = st.selectbox(
+            "Pilih Model",
+            options=list(SPLIT_LABELS.keys()),
+            index=0,
+        )
+        use_comparison = False
 
-    new_cfg = {
-        "selected_split": selected_split,
-        "use_comparison": use_comparison,
-    }
+# ── AKHIR MENU RAHASIA ──
+st.divider()
+active_label = (
+    "Semua Model (S1, S2, S3)"
+    if use_comparison
+    else selected_split
+)
+st.caption(f"Model aktif : {active_label}")
 
-    if new_cfg != _cfg:
-        _save_config(new_cfg)
-        _cfg = new_cfg
-
-else:
-    selected_split = st.selectbox(
-        "Pilih Model",
-        options=list(SPLIT_LABELS.keys()),
-        index=0,
-    )
-    use_comparison = False
-    
-    # ── AKHIR MENU RAHASIA ──
-    # User biasa bebas memilih model
-    
-    # Tampilkan info skenario aktif kepada user (selalu terlihat)
-    st.divider()
-    active_label = "Semua Model (S1, S2, S3)" if use_comparison else selected_split
-    st.caption(f"Model aktif : {active_label}")
-
-    st.divider()
-    st.caption(f"Durasi window  : {DURASI} detik")
-    st.caption(f"Phase terminal : detik ke-{WINDOW_TRANSISI + 1}")
-    st.caption(f"Conf. threshold: {int(CONFIDENCE_THRESH * 100)}%")
-    st.caption("Scaler         : StandardScaler (Z-Score)")
-    st.caption("Dataset        : Skenario 7 — x15 Balanced")
-    st.caption("Log error      : app_errors.log")
+st.divider()
+st.caption(f"Durasi window  : {DURASI} detik")
+st.caption(f"Phase terminal : detik ke-{WINDOW_TRANSISI + 1}")
+st.caption(f"Conf. threshold: {int(CONFIDENCE_THRESH * 100)}%")
+st.caption("Scaler         : StandardScaler (Z-Score)")
+st.caption("Dataset        : Skenario 7 — x15 Balanced")
+st.caption("Log error      : app_errors.log")
 
 # ──────────────────────────────────────────────
 # HEADER
