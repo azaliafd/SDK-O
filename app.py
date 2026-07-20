@@ -507,16 +507,9 @@ with st.sidebar:
         options=["📂 Data Historis", "📤 Unggah CSV"],
         label_visibility="collapsed"
     )
-    # st.divider()
-    # st.subheader("Model Deteksi")
-    # selected_split = st.selectbox(
-    #     "Pilih Model",
-    #     options=list(SPLIT_LABELS.keys()),
-    #     index=0,   # default S1
-    #     )
 
     # ── MENU RAHASIA — hanya muncul jika ?dev=true ──
-    # Akses: http://localhost:8501?dev=true
+    # Akses: ?dev=true
     # Pilihan disimpan ke file .application_config sehingga
     # tetap aktif meski URL berubah atau aplikasi di-restart.
     if DEV_MODE:
@@ -526,22 +519,22 @@ with st.sidebar:
         use_comparison = st.toggle(
             "Bandingkan S1 / S2 / S3",
             value=_cfg.get("use_comparison", False),
-            )
-        
+        )
+
         if not use_comparison:
             split_options = list(SPLIT_LABELS.keys())
             saved_index = (
                 split_options.index(_cfg.get("selected_split", "S1 (70:15:15)"))
                 if _cfg.get("selected_split") in split_options
                 else 0
-                )
-            
+            )
+
             selected_split = st.selectbox(
                 "Model Split Aktif",
                 options=split_options,
                 index=saved_index,
-                )
-            
+            )
+
         else:
             selected_split = _cfg.get("selected_split", "S1 (70:15:15)")
             st.caption("Ketiga model dijalankan bersamaan.")
@@ -563,22 +556,22 @@ with st.sidebar:
         )
         use_comparison = False
 
-# ── AKHIR MENU RAHASIA ──
-st.divider()
-active_label = (
-    "Semua Model (S1, S2, S3)"
-    if use_comparison
-    else selected_split
-)
-st.caption(f"Model aktif : {active_label}")
+    # ── INFO MODEL (tetap di sidebar) ──
+    st.divider()
 
-st.divider()
-st.caption(f"Durasi window  : {DURASI} detik")
-st.caption(f"Phase terminal : detik ke-{WINDOW_TRANSISI + 1}")
-st.caption(f"Conf. threshold: {int(CONFIDENCE_THRESH * 100)}%")
-st.caption("Scaler         : StandardScaler (Z-Score)")
-st.caption("Dataset        : Skenario 7 — x15 Balanced")
-st.caption("Log error      : app_errors.log")
+    active_label = (
+        "Semua Model (S1, S2, S3)"
+        if use_comparison
+        else selected_split
+    )
+
+    st.caption(f"Model aktif : {active_label}")
+    st.caption(f"Durasi window  : {DURASI} detik")
+    st.caption(f"Phase terminal : detik ke-{WINDOW_TRANSISI + 1}")
+    st.caption(f"Conf. threshold: {int(CONFIDENCE_THRESH * 100)}%")
+    st.caption("Scaler         : StandardScaler (Z-Score)")
+    st.caption("Dataset        : Skenario 7 — x15 Balanced")
+    st.caption("Log error      : app_errors.log")
 
 # ──────────────────────────────────────────────
 # HEADER
